@@ -8,7 +8,6 @@ def call(Map config = [:]) {
     def manifestsPath = config.manifestsPath ?: 'kubernetes'
     def gitCredentials = config.gitCredentials ?: 'github-credentials'
     def gitUserName = config.gitUserName ?: 'Jenkins CI'
-    def gitUserEmail = config.gitUserEmail ?: 'jenkins@example.com'
     
     echo "Updating Kubernetes manifests with image tag: ${imageTag}"
     
@@ -20,13 +19,12 @@ def call(Map config = [:]) {
         // Configure Git
         sh """
             git config user.name "${gitUserName}"
-            git config user.email "${gitUserEmail}"
         """
         
         // Update deployment manifests with new image tags - using proper Linux sed syntax
         sh """
-            # Update main application deployment - note the correct image name is trainwithshubham/easyshop-app
-            sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/08-easyshop-deployment.yaml
+            # Update payment service
+            sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/deployment.yaml
             
             # Update migration job if it exists
             #if [ -f "${manifestsPath}/12-migration-job.yaml" ]; then
