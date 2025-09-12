@@ -27,13 +27,13 @@ def call(Map config = [:]) {
             sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
             
             # Update migration job if it exists
-            #if [ -f "${manifestsPath}/12-migration-job.yaml" ]; then
-            #    sed -i "s|image: trainwithshubham/easyshop-migration:.*|image: trainwithshubham/easyshop-migration:${imageTag}|g" ${manifestsPath}/12-migration-job.yaml
-            #fi
+            if [ -f "${manifestsPath}/04-migration-job.yaml" ]; then
+                sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
+            fi
             
             # Ensure ingress is using the correct domain
             if [ -f "${manifestsPath}/10-ingress.yaml" ]; then
-                sed -i "s|host: .*|host: easyshop.letsdeployit.com|g" ${manifestsPath}/10-ingress.yaml
+                sed -i "s|host: .*|host: domain.gigbanc.co|g" ${manifestsPath}/10-ingress.yaml
             fi
             
             # Check for changes
