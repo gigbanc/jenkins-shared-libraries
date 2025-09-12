@@ -24,7 +24,7 @@ def call(Map config = [:]) {
         // Update deployment manifests with new image tags - using proper Linux sed syntax
         sh """
             # Update payment service
-            sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/deployment.yaml
+            sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
             
             # Update migration job if it exists
             #if [ -f "${manifestsPath}/12-migration-job.yaml" ]; then
