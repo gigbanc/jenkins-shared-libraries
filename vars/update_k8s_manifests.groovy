@@ -4,7 +4,7 @@
  * Update Kubernetes manifests with new image tags
  */
 def call(Map config = [:]) {
-    def imageTag = config.imageName ?: error("Image name is required")
+    def imageName = config.imageName ?: error("Image name is required")
     def imageTag = config.imageTag ?: error("Image tag is required")
     def manifestsPath = config.manifestsPath ?: 'kubernetes'
     def gitCredentials = config.gitCredentials ?: 'github-credentials'
