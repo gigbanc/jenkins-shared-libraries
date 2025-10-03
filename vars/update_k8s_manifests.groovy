@@ -4,11 +4,13 @@
  * Update Kubernetes manifests with new image tags
  */
 def call(Map config = [:]) {
+    def imageTag = config.imageName ?: error("Image name is required")
     def imageTag = config.imageTag ?: error("Image tag is required")
     def manifestsPath = config.manifestsPath ?: 'kubernetes'
     def gitCredentials = config.gitCredentials ?: 'github-credentials'
     def gitUserName = config.gitUserName ?: 'Jenkins CI'
-    
+
+    echo "Update k8 for ${imageName}"
     echo "Updating Kubernetes manifests with image tag: ${imageTag}"
     
     withCredentials([usernamePassword(
@@ -23,18 +25,18 @@ def call(Map config = [:]) {
         
         // Update deployment manifests with new image tags - using proper Linux sed syntax
         sh """
-            # Update payment service
-            sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
+            # Update service
+            sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
             
             # Update migration job if it exists
             if [ -f "${manifestsPath}/04-migration-job.yaml" ]; then
-                sed -i "s|image: babatopeoni/payment-service:.*|image: babatopeoni/payment-service:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
+                sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
             fi
             
             # Ensure ingress is using the correct domain
-            if [ -f "${manifestsPath}/10-ingress.yaml" ]; then
-                sed -i "s|host: .*|host: domain.gigbanc.co|g" ${manifestsPath}/10-ingress.yaml
-            fi
+            #if [ -f "${manifestsPath}/10-ingress.yaml" ]; then
+            #    sed -i "s|host: .*|host: domain.gigbanc.co|g" ${manifestsPath}/10-ingress.yaml
+            #fi
             
             # Check for changes
             if git diff --quiet; then
