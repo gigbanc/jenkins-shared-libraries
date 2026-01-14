@@ -10,6 +10,13 @@ def call(Map config = [:]) {
     def gitCredentials = config.gitCredentials ?: 'github-credentials'
     def gitUserName = config.gitUserName ?: 'Jenkins CI'
 
+    // Strips "origin/" if it exists
+    CLEAN_BRANCH = "${env.GIT_BRANCH}".replaceAll('^origin/', '')
+
+    // Use the env object
+    echo "Building on branch: ${env.BRANCH_NAME}"
+    echo "Clean Branch: ${CLEAN_BRANCH}"
+
     echo "Update k8 for ${imageName}"
     echo "Updating Kubernetes manifests with image tag: ${imageTag}"
     
