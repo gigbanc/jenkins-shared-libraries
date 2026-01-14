@@ -41,12 +41,12 @@ def call(Map config = [:]) {
             echo "Looking for image: ${imageName}"
             grep -n "image:" ${manifestsPath}/02-deployment.yaml || echo "No image lines found"
 
-            # Update deployment
-            sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
+            # Update deployment (handles with or without existing tag)
+            sed -i "s|image: ${imageName}.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
 
             # Update migration job if it exists
             if [ -f "${manifestsPath}/04-migration-job.yaml" ]; then
-                sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
+                sed -i "s|image: ${imageName}.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
             fi
             
             # Ensure ingress is using the correct domain
