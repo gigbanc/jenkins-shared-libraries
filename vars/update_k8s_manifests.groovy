@@ -36,6 +36,11 @@ def call(Map config = [:]) {
         
         // Update deployment manifests with new image tags
         sh """
+            # Debug: show path and current image line
+            echo "Manifests path: ${manifestsPath}"
+            echo "Looking for image: ${imageName}"
+            grep -n "image:" ${manifestsPath}/02-deployment.yaml || echo "No image lines found"
+
             # Update deployment
             sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
 
