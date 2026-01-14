@@ -64,7 +64,7 @@ def call(Map config = [:]) {
                 
                 # Set up credentials for push
                 git remote set-url origin https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/gigbanc/payment-service.git
-                git push origin HEAD:\${GIT_BRANCH}
+                git push origin HEAD:${CLEAN_BRANCH}
             fi
         """
     }
