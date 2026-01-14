@@ -13,8 +13,12 @@ def call(Map config = [:]) {
     // Strips "origin/" if it exists
     CLEAN_BRANCH = "${env.GIT_BRANCH}".replaceAll('^origin/', '')
 
+    // Append /prod to manifestsPath if branch is main
+    if (CLEAN_BRANCH == 'main') {
+        manifestsPath = "${manifestsPath}/prod"
+    }
+
     // Use the env object
-    echo "Building on branch: ${env.BRANCH_NAME}"
     echo "Clean Branch: ${CLEAN_BRANCH}"
 
     echo "Update k8 for ${imageName}"
@@ -30,16 +34,14 @@ def call(Map config = [:]) {
             git config user.name "${gitUserName}"
         """
         
-        // Update deployment manifests with new image tags - using proper Linux sed syntax
+        // Update deployment manifests with new image tags
         sh """
-            # Update service
-            #sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
-            yq -i '.spec.template.spec.containers[0].image = "${imageName}:${imageTag}"' ${manifestsPath}/02-deployment.yaml
+            # Update deployment
+            sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/02-deployment.yaml
 
             # Update migration job if it exists
             if [ -f "${manifestsPath}/04-migration-job.yaml" ]; then
-                #sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
-                yq -i '.spec.template.spec.containers[0].image = "${imageName}:${imageTag}"' ${manifestsPath}/04-migration.yaml
+                sed -i "s|image: ${imageName}:.*|image: ${imageName}:${imageTag}|g" ${manifestsPath}/04-migration-job.yaml
             fi
             
             # Ensure ingress is using the correct domain
