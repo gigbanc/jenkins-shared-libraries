@@ -63,7 +63,8 @@ def call(Map config = [:]) {
                 git commit -m "Update image tags to ${imageTag} and ensure correct domain [ci skip]"
                 
                 # Set up credentials for push
-                git remote set-url origin https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/gigbanc/payment-service.git
+                REMOTE_URL=\$(git remote get-url origin)
+                git remote set-url origin \$(echo \$REMOTE_URL | sed 's|https://|https://\${GIT_USERNAME}:\${GIT_PASSWORD}@|')
                 git push origin HEAD:${CLEAN_BRANCH}
             fi
         """
