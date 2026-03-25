@@ -64,8 +64,11 @@ def call(Map config = [:]) {
                 
                 # Set up credentials for push
                 REMOTE_URL=\$(git remote get-url origin)
-                git remote set-url origin \$(echo \$REMOTE_URL | sed 's|https://|https://\${GIT_USERNAME}:\${GIT_PASSWORD}@|')
-                git push origin HEAD:${CLEAN_BRANCH}
+                #git remote set-url origin \$(echo \$REMOTE_URL | sed 's|https://|https://\${GIT_USERNAME}:\${GIT_PASSWORD}@|')
+                #git push origin HEAD:${CLEAN_BRANCH}
+                git remote set-url origin \$REMOTE_URL
+                git -c credential.helper='!f() { echo username=\$GIT_USERNAME; echo password=\$GIT_PASSWORD; }; f' \
+                push origin HEAD:${CLEAN_BRANCH} --tags
             fi
         """
     }
