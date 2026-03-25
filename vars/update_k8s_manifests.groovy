@@ -32,6 +32,7 @@ def call(Map config = [:]) {
         // Configure Git
         sh """
             git config user.name "${gitUserName}"
+            git config --unset-all http.https://github.com/.extraheader || true
         """
         
         // Update deployment manifests with new image tags
