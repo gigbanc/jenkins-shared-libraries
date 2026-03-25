@@ -32,7 +32,6 @@ def call(Map config = [:]) {
         // Configure Git
         sh """
             git config user.name "${gitUserName}"
-            git config --unset-all http.https://github.com/.extraheader || true
         """
         
         // Update deployment manifests with new image tags
@@ -65,7 +64,9 @@ def call(Map config = [:]) {
                 
                 # Set up credentials for push (base64 avoids special-char issues in passwords)
                 B64=\$(printf '%s' "\${GIT_USERNAME}:\${GIT_PASSWORD}" | base64 | tr -d '\n')
-                git -c http.extraHeader="Authorization: Basic \$B64" push origin HEAD:${CLEAN_BRANCH}
+                git config http.https://github.com/.extraheader "Authorization: Basic \$B64"
+                git push origin HEAD:${CLEAN_BRANCH}
+                git config --unset-all http.https://github.com/.extraheader
             fi
         """
     }
