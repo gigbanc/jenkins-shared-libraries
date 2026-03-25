@@ -62,15 +62,9 @@ def call(Map config = [:]) {
                 git add ${manifestsPath}/*.yaml
                 git commit -m "Update image tags to ${imageTag} and ensure correct domain [ci skip]"
                 
-                # Set up credentials for push
-                REMOTE_URL=\$(git remote get-url origin)
-                AUTH_TOKEN=\$(echo -n "${GIT_USERNAME}:${GIT_PASSWORD}" | base64)
-                git config http.https://github.com/.extraheader "Authorization: Basic \$AUTH_TOKEN"
-                #git config extraheader 'Authorization: Basic \$(echo -n ${GIT_USERNAME}:${GIT_PASSWORD} | base64)'
-                git remote set-url origin \${REMOTE_URL}
-                #git remote set-url origin \$(echo \$REMOTE_URL | sed 's|https://|https://\${GIT_USERNAME}:\${GIT_PASSWORD}@|')
-                git push origin HEAD:${CLEAN_BRANCH}
-                git config --unset http.https://github.com/.extraheader
+                # Set up credentials for push (base64 avoids special-char issues in passwords)
+                B64=\$(printf '%s' "\${GIT_USERNAME}:\${GIT_PASSWORD}" | base64 | tr -d '\n')
+                git -c http.extraHeader="Authorization: Basic \$B64" push origin HEAD:${CLEAN_BRANCH}
             fi
         """
     }
