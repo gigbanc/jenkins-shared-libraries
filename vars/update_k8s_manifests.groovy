@@ -67,7 +67,7 @@ def call(Map config = [:]) {
                 AUTH_TOKEN=\$(echo -n "${GIT_USERNAME}:${GIT_PASSWORD}" | base64)
                 git config http.https://github.com/.extraheader "Authorization: Basic \$AUTH_TOKEN"
                 #git config extraheader 'Authorization: Basic \$(echo -n ${GIT_USERNAME}:${GIT_PASSWORD} | base64)'
-                git remote set-url origin ${REMOTE_URL}
+                git remote set-url origin \${REMOTE_URL}
                 #git remote set-url origin \$(echo \$REMOTE_URL | sed 's|https://|https://\${GIT_USERNAME}:\${GIT_PASSWORD}@|')
                 git push origin HEAD:${CLEAN_BRANCH}
                 git config --unset http.https://github.com/.extraheader
